@@ -1,0 +1,30 @@
+<!-- Dropdown Structure -->
+<ul id="dropdown1" class="dropdown-content" style="height:0px;">
+  
+</ul>
+<nav>
+  <div class="nav-wrapper">
+    <a href="/" class="brand-logo" style="margin-left: 60px;">Trading App</a>
+    <ul class="right hide-on-med-and-down" style="height: 0px;">
+      
+      <li>
+        <a href="{% url 'Accounts:logout_user' %}"><i class="material-icons" style="display: inline; vertical-align: bottom;">book</i>Logout</a>
+      </li>
+
+      <li>
+        <a href="{% url 'Broker:tradepage' %}" target="_blank"><i class="material-icons" style="display: inline; vertical-align: bottom;">book</i>Stock Trade</a>
+      </li>
+
+      <li>
+        <a href="{% url 'Broker:stockrecommend' %}" target="_blank"><i class="material-icons" style="display: inline; vertical-align: bottom;">book</i>Smart Trade</a>
+      </li>
+
+      <li>
+        <a href="{% url 'Broker:smartinvest' %}" target="_blank"><i class="material-icons" style="display: inline; vertical-align: bottom;">book</i>Smart Invest</a>
+      </li>
+
+      <li><a href="/admin/" style="font-weight: 501;">Admin</a><br /></li>
+    </ul>
+  </div>
+</nav>
+

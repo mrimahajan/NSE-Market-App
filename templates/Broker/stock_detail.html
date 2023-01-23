@@ -1,0 +1,380 @@
+{% extends 'Base/Header.html' %}
+{% load static %}
+{% block content %}
+
+<script>
+
+window.setTimeout(function () {
+    location.href = "{% url 'Broker:stockdetail' stock.Symbol %}";
+}, 300000);
+</script>
+
+<h1>{{stock.Symbol}} : {{stock.Company}}</h1>
+<h2>Sector : {{stock.Sector}}</h2>
+
+<h1>Order Book</h1>
+<table>
+<tr>
+    <th>Buy Price</th>
+    <th>Buy Qty</th>
+    <th>Sell Qty</th>
+    <th>Sell Price</th>
+</tr>
+
+{% for order in orderbook %}
+<tr>
+    <td>{{order.0}}</td>
+    <td>{{order.1}}</td>
+    <td>{{order.2}}</td>
+    <td>{{order.3}}</td>
+</tr>
+{% endfor %}
+</table>
+
+<br>
+<br>
+
+<table>
+
+<tr>
+    <td>Last Trade Price: </td>
+    <td>{{stock.EOD_Price}}</td>
+</tr>
+
+<tr>
+    <td>Lowest Price in day: </td>
+    <td>{{stock.low_price}}</td>
+</tr>
+
+<tr>
+    <td>Highest Price in day: </td>
+    <td>{{stock.high_price}}</td>
+</tr>
+
+<tr>
+    <td>Lowest Price in 52 weeks: </td>
+    <td>{{low52}}</td>
+</tr>
+
+<tr>
+    <td>Highest Price in 52 weeks: </td>
+    <td>{{high52}}</td>
+</tr>
+
+
+
+<tr>
+    <td>Last Day Close: </td>
+    <td>{{last_day_close}}</td>
+</tr>
+
+<tr>
+    <td>Expected Price: </td>
+    <td>{{stock.Expected_Price}}</td>
+</tr>
+
+<tr>
+    <td>Macro Impact: </td>
+    {% if macro_cont < 0 %}
+    <td style="color:Red"> {{macro_cont}} BPS </td>
+
+    {% else %}
+
+    <td style="color:Green"> {{macro_cont}} BPS </td>
+
+    {% endif %}
+</tr>
+
+<tr>
+    <td>Sector Impact: </td>
+    {% if sector_cont < 0 %}
+    <td style="color:Red"> {{sector_cont}} BPS </td>
+
+    {% else %}
+
+    <td style="color:Green"> {{sector_cont}} BPS </td>
+
+    {% endif %}
+</tr>
+
+<tr>
+    <td>Market Capital Impact: </td>
+    {% if cap_cont < 0 %}
+    <td style="color:Red"> {{cap_cont}} BPS </td>
+
+    {% else %}
+
+    <td style="color:Green"> {{cap_cont}} BPS </td>
+
+    {% endif %}
+</tr>
+
+
+
+<tr>
+    <td>Market Impact: </td>
+    {% if market_cont < 0 %}
+    <td style="color:Red"> {{market_cont}} % </td>
+
+    {% else %}
+
+    <td style="color:Green"> {{market_cont}} % </td>
+
+    {% endif %}
+</tr>
+
+<tr>
+    <td>Company Performance Impact: </td>
+    {% if comp_cont < 0 %}
+    <td style="color:Red"> {{comp_cont}} % </td>
+
+    {% else %}
+
+    <td style="color:Green"> {{comp_cont}} % </td>
+
+    {% endif %}
+</tr>
+
+<tr>
+    <td>Net Impact: </td>
+    {% if net_impact < 0 %}
+    <td style="color:Red"> {{net_impact}} % </td>
+
+    {% else %}
+
+    <td style="color:Green"> {{net_impact}} % </td>
+
+    {% endif %}
+</tr>
+
+</table>
+
+<form method="POST" action="{% url 'Broker:stockdetail' stock.Symbol %}">
+
+{% csrf_token %}
+
+<select name="period" style="display:inline-block;">
+  <option value=5 selected="selecetd">5 Days</option>
+  <option value=10 >10 Days</option>
+  <option value=20 >20 Days</option>
+  <option value=50 >50 Days</option>
+  <option value=75 >75 Days</option>
+  <option value=100 >100 Days</option>
+  <option value=125 >125 Days</option>
+  <option value=150 >150 Days</option>
+  <option value=175 >175 Days</option>
+  <option value=200 >200 Days</option>
+  <option value=250 >250 Days</option>
+</select>
+<br>
+  <input type="submit" value="Submit">
+
+</form>
+<table>
+
+<tr>
+    <td>Accuracy of Price Movement Direction:</td>
+    <td>{{accuracy}} %</td>
+</tr>
+
+<tr>
+    <td>Price Determination Score:</td>
+    <td>{{pred_score}} %</td>
+</tr>
+
+</table>
+
+<IMG SRC="{{img_url}}" width="1280" height="640">
+
+<h1>Options</h1>
+
+<form method="POST" action="{% url 'Broker:stockdetail' stock.Symbol %}">
+
+{% csrf_token %}
+
+<select name="expiry" style="display:inline-block;">
+  <option value="" selected="selecetd">Choose Expiry</option>
+  {% for expiry in possible_expiries %}
+  <option value={{expiry}} >{{expiry}}</option>
+  {% endfor %}
+</select>
+<br>
+  <input type="submit" value="Submit">
+
+</form>
+
+<h1>Calls</h1>
+
+{% if not calls %}
+
+    <h3 align="center" style="color: #9e9e9e">No calls to display</h3>
+
+{% else %}
+
+<table>
+<tr>
+    <th>Expiry</th>
+    <th>Strike</th>
+    <th>Last Day Price(in Rs.)</th>
+    <th>Expected Price(in Rs.)</th>
+</tr>
+
+{% for call in calls %}
+
+<tr>
+
+<td><a href="{% url 'Broker:opttradepage' call.id %}" target="_blank">{{call.Expiry}}</a></td>
+<td><a href="{% url 'Broker:opttradepage' call.id %}" target="_blank">{{call.Strike}}</a></td>
+<td>{{call.EOD_Price}}</td>
+<td>{{call.Expected_Price}}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endif %}
+
+<h1>Puts</h1>
+
+{% if not puts %}
+
+    <h3 align="center" style="color: #9e9e9e">No puts to display</h3>
+
+{% else %}
+
+<table>
+<tr>
+    <th>Expiry</th>
+    <th>Strike</th>
+    <th>Last Day Price(in Rs.)</th>
+    <th>Expected Price(in Rs.)</th>
+</tr>
+
+{% for put in puts %}
+
+<tr>
+
+<td><a href="{% url 'Broker:opttradepage' put.id %}" target="_blank">{{put.Expiry}}</a></td>
+<td><a href="{% url 'Broker:opttradepage' put.id %}" target="_blank">{{put.Strike}}</a></td>
+<td>{{put.EOD_Price}}</td>
+<td>{{put.Expected_Price}}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endif %}
+
+<h1>Valuation</h1>
+
+<h2>Projections:</h2>
+
+<div id="projection">
+<table border="1px"> 
+    <tr> 
+        {% for data in projections %} 
+            <th>{{ data }}</th> 
+        {% endfor %} 
+ 
+        {% for _, record in projections.iterrows %} 
+            <tr> 
+                {% for value in record %} 
+                    <td>{{ value }}</td> 
+                {% endfor %} 
+            </tr> 
+        {% endfor %} 
+    </tr> 
+</table> 
+
+</div>
+
+<h2>Holding:</h2>
+
+<div id="holding">
+<table border="1px"> 
+    <tr> 
+        {% for data in holding_breakup %} 
+            <th>{{ data }}</th> 
+        {% endfor %} 
+ 
+        {% for _, record in holding_breakup.iterrows %} 
+            <tr> 
+                {% for value in record %} 
+                    <td>{{ value }}</td> 
+                {% endfor %} 
+            </tr> 
+        {% endfor %} 
+    </tr> 
+</table> 
+
+</div>
+
+<h3>Ratios and Present Value:</h3>
+
+{% if valuation %}
+<form method="Post" action="{% url 'Broker:stockdetail' stock.Symbol %}">
+
+{% csrf_token %}
+
+<select name="holding_period" style="display:inline-block;">
+  <option value=1 selected="selecetd">1 Year</option>
+  <option value=2 >2 Years</option>
+  <option value=3 >3 Years</option>
+  <option value=4 >4 Years</option>
+  <option value=5 >5 Years</option>
+</select>
+<br>
+  <input type="submit" value="Submit">
+
+</form>
+
+<table>
+    <tr>
+    <th>Estimated Present Value</th>
+    <th>EV/Sales</th>
+    <th>EV/Ebit</th>
+    <th>PE(Price to Earnings)</th>
+    <th>PB(Price to Sales)</th>
+    <tr>
+
+    <tr>
+    <td>{{dcf_value}}</td>
+    <td>{{valuation.EV_Sales}}</td>
+    <td>{{valuation.EV_Ebit}}</td>
+    <td>{{valuation.PE_Ratio}}</td>
+    <td>{{valuation.PB_Ratio}}</td>
+    </tr>
+
+</table>
+
+{% endif %}
+
+<h4>Peer Comparison</h4>
+{% if peer_valuations %}
+<table>
+<tr>
+    <th>Company</th>
+    <th>EV/Sales</th>
+    <th>EV/Ebit</th>
+    <th>PE(Price to Earnings)</th>
+    <th>PB(Price to Sales)</th>
+</tr>
+{% for valuation in peer_valuations %}
+<tr>
+    <td>{{valuation.Stock.Company}}</td>
+    <td>{{valuation.EV_Sales}}</td>
+    <td>{{valuation.EV_Ebit}}</td>
+    <td>{{valuation.PE_Ratio}}</td>
+    <td>{{valuation.PB_Ratio}}</td>
+</tr>
+{% endfor %}
+
+</table>
+{% endif %}
+
+{% endblock %}
+

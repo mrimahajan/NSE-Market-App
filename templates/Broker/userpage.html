@@ -1,0 +1,256 @@
+{% extends 'Base/Header.html' %}
+{% load static %}
+{% block content %}
+
+<h1>Hi {{first_name}}, welcome to our trading portal</h1>
+<script>
+	window.setTimeout(function () {
+    location.href = "{% url 'Broker:userpage' %}";
+}, 300000);
+</script>
+<h6>Today : {{today}}</h6>
+<br>
+<br>
+
+<form method="POST" action="{% url 'Broker:userpage' %}">
+
+{% csrf_token %}
+
+<select name="sector" style="display:inline-block;">
+  <option value="" selected="selected">Choose Sector</option>
+  <option value="PVT Bank" >Private Banks</option>
+  <option value="PSU Bank" >Public Sector Banks</option>
+  <option value="Financial Services" >Financial Services</option>
+  <option value="Automobiles" >Automobiles</option>
+  <option value="Fast Moving Consumer Goods" >FMCG</option>
+  <option value="Information Technology" >Information Technology</option>
+  <option value="Media & Entertainment" >Media & Entertainment</option>
+  <option value="Metals" >Metals</option>
+  <option value="Pharmaceuticals" >Pharmaceuticals</option>
+  <option value="Real Estate" >Real Estate</option>
+  <option value="Infrastructure" >Infrastructure</option>
+  <option value="Commodities" >Commodities</option>
+  <option value="Energy" >Energy</option>
+  <option value="Multi Nationals" >Multi Nationals</option>
+  <option value="Public Sector Enterprises" >Public Sector Enterprises</option>
+  <option value="Service Sector" >Service Sector</option>
+</select>
+<br>
+  <input type="submit" value="Submit">
+
+</form>
+
+<div class="row">
+
+<br>
+
+<h10>Sector: {{sector}}</h10>
+
+{% if not stocks %}
+
+	<h3 align="center" style="color: #9e9e9e">No stocks to display</h3>
+
+{% else %}
+
+<table>
+<tr>
+	<th>Company</th>
+	<th>Symbol</th>
+	<th>Last Traded Price(in Rs.)</th>
+	<th>Expected Price(in Rs.)</th>
+</tr>
+
+{% for stock in stocks %}
+
+<tr>
+	<td>{{stock.Company}}</td>
+	<td><a href="{% url 'Broker:stockdetail' stock.Symbol %}" target="_blank">{{stock.Symbol}}</a></td>
+	<td>{{stock.EOD_Price}}</td>
+	<td>{{stock.Expected_Price}}</td>
+	
+</tr>
+	
+
+
+{% endfor %}
+
+</table>
+
+{% endif %}
+
+</div>
+
+<div class="row">
+
+<br>
+
+<h5>Stock Portfolio</h5>
+
+{% if not portfolios %}
+
+<h3 align="center" style="color: #9e9e9e">Trader has no active investments</h3>
+
+{% else %}
+
+<table>
+
+<tr>
+	<th>Stock</th>
+	<th>Company</th>
+	<th>Units</th>
+	<th>Invested(in Rs.)</th>
+	<th>Current Value(in Rs.)</th>
+	
+	
+</tr>
+
+{% for portfolio in portfolios %}
+
+<tr>
+
+	<td>{{portfolio.Stock.Symbol}}</td>
+	<td>{{portfolio.Stock.Company}}</td>
+	<td>{{portfolio.Units}}</td>
+	<td>{{portfolio.Invested}}</td>
+	<td>{{portfolio.Current_Value}}</td>
+
+</tr>
+
+{% endfor %}
+
+{% endif %}
+
+<tr>
+	<td> Total Investment(in Rs.)  </td>
+	<td> {{total_investment}} </td>
+</tr>
+
+<br>
+
+<tr>
+	<td> Portfolio Value(in Rs.)  </td>
+	<td> {{total_assets}} </td>
+</tr>
+
+<br>
+
+<tr>
+	<td> Unrealized Profit/Loss (in Rs.) </td>
+	{% if unrealized_profit_loss < 0 %}
+	<td style="color:Red"> {{unrealized_profit_loss}}({{unrealized_profit_pct}}%) </td>
+
+	{% else %}
+
+	<td style="color:Green"> {{unrealized_profit_loss}}({{unrealized_profit_pct}}%) </td>
+
+	{% endif %}
+	
+	
+</tr>
+
+<tr>
+	<td> Realized Profit/Loss (in Rs.) </td>
+	{% if realized_profit_loss < 0 %}
+	<td style="color:Red"> {{realized_profit_loss}} </td>
+
+	{% else %}
+
+	<td style="color:Green"> {{realized_profit_loss}} </td>
+
+	{% endif %}
+	
+	
+</tr>
+
+</table>
+
+
+
+
+<h5>Option Portfolio</h5>
+
+{% if not opt_portfolios %}
+
+<h3 align="center" style="color: #9e9e9e">Trader has no active option investments</h3>
+
+{% else %}
+
+<table>
+
+<tr>
+	<th>Stock</th>
+	<th>Expiry</th>
+	<th>Option Type</th>
+	<th>Strike</th>
+	<th>Units</th>
+	<th>Invested(in Rs.)</th>
+	<th>Current Value(in Rs.)</th>
+	
+	
+</tr>
+
+{% for portfolio in opt_portfolios %}
+
+<tr>
+
+	<td>{{portfolio.Option.Stock.Symbol}}</td>
+	<td>{{portfolio.Option.Expiry}}</td>
+	<td>{{portfolio.Option.Opt_Type}}</td>
+	<td>{{portfolio.Option.Strike}}</td>
+	<td>{{portfolio.Units}}</td>
+	<td>{{portfolio.Invested}}</td>
+	<td>{{portfolio.Current_Value}}</td>
+
+</tr>
+
+{% endfor %}
+
+<tr>
+	<td> Total Investment(in Rs.)  </td>
+	<td> {{opt_total_investment}} </td>
+</tr>
+
+<br>
+
+<tr>
+	<td> Portfolio Value(in Rs.)  </td>
+	<td> {{total_opt_assets}} </td>
+</tr>
+
+<br>
+
+<tr>
+	<td> Unrealized Profit/Loss (in Rs.) </td>
+	{% if unrealized_opt_profit_loss < 0 %}
+	<td style="color:Red"> {{unrealized_opt_profit_loss}}({{unrealized_opt_profit_pct}}%) </td>
+
+	{% else %}
+
+	<td style="color:Green"> {{unrealized_opt_profit_loss}}({{unrealized_opt_profit_pct}}%) </td>
+
+	{% endif %}
+	
+	
+</tr>
+
+<br>
+
+<tr>
+	<td> Realized Profit/Loss (in Rs.) </td>
+	{% if opt_realized_profit_loss < 0 %}
+	<td style="color:Red"> {{opt_realized_profit_loss}} </td>
+
+	{% else %}
+
+	<td style="color:Green"> {{opt_realized_profit_loss}} </td>
+
+	{% endif %}
+	
+	
+</tr>
+
+</table>
+
+{% endif %}
+
+{% endblock %}

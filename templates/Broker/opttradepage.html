@@ -1,0 +1,43 @@
+{% extends 'Base/Header.html' %}
+{% load static %}
+{% block content %}
+
+<h1>Hi {{first_name}}, welcome to our option trading portal</h1>
+<h6>Today : {{today}}</h6>
+<br>
+<br>
+
+
+<form method="POST" action="{% url 'Broker:opttradepage' id%}">
+
+{% csrf_token %}
+<br>
+
+<label>Buy/Sell</label>
+<select name="trade_type" style="display:inline-block;">
+  <option value="Buy">Buy</option>
+  <option value="Sell">Sell</option>
+</select>
+<br>
+
+<label>Method</label>
+<select name="trade_method" style="display:inline-block;">
+  <option value="Limit">Limit</option>
+  <option value="Market">Market</option>
+</select>
+<br>
+
+<label>Quantity</label>
+<input name = "trade_qty" type="number" min="1" step="1"/>
+
+<label>Price</label>
+
+<input name = "trade_price" type="number" min= "0" step="0.01"/>
+
+
+  <input type="submit" value="Submit">
+
+
+</form>
+
+{% endblock %}

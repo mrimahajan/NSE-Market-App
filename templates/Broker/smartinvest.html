@@ -1,0 +1,109 @@
+{% extends 'Base/Header.html' %}
+{% load static %}
+{% block content %}
+
+<form method="POST" action="{% url 'Broker:smartinvest' %}">
+
+    {% csrf_token %}
+    
+<label><strong>Please enter the amount of fund you want to trade: </strong></label>
+
+<input name = "invest" type="number" min= "0" step="0.01"/>
+
+<br>
+
+<label><strong>Please enter the minimum yearly expected return in percentage from stock investment(optional): </strong></label>
+
+<input name = "min_return" type="number" min= "0" step="0.01"/>
+
+<br>
+
+<label><strong>Please enter the maximum yearly expected return in percentage from stock investment(optional): </strong></label>
+
+<input name = "max_return" type="number" min= "0" step="0.01"/>
+
+<br>
+
+
+<label><strong>Please select sectors you want to invest in if any particular ones (optional): </strong></label>
+<br>
+
+<select name="sectors" style="display:inline-block; height:370px;" multiple>
+  <option value="PVT Bank" >Private Banks</option>
+  <option value="PSU Bank" >Public Sector Banks</option>
+  <option value="Financial Services" >Financial Services</option>
+  <option value="Automobiles" >Automobiles</option>
+  <option value="Fast Moving Consumer Goods" >FMCG</option>
+  <option value="Information Technology" >Information Technology</option>
+  <option value="Media & Entertainment" >Media & Entertainment</option>
+  <option value="Metals" >Metals</option>
+  <option value="Pharmaceuticals" >Pharmaceuticals</option>
+  <option value="Real Estate" >Real Estate</option>
+  <option value="Infrastructure" >Infrastructure</option>
+  <option value="Commodities" >Commodities</option>
+  <option value="Energy" >Energy</option>
+  <option value="Multi Nationals" >Multi Nationals</option>
+  <option value="Public Sector Enterprises" >Public Sector Enterprises</option>
+  <option value="Service Sector" >Service Sector</option>
+</select>
+<br>
+
+<label><strong>Please select stocks you want to exclude from investment if any particular ones (optional): </label>
+<br>
+<select name="Exclude" style="display:inline-block; height:1000px;" multiple>
+  {% for s in stocks %}
+  <option value={{s}}>{{s}}</option>
+  {% endfor %}
+</select>
+<br>
+
+<label><strong>Please select stocks you want to include in investment if any particular ones (optional): </label>
+<br>
+<select name="Include" style="display:inline-block; height:1000px;" multiple>
+  {% for s in stocks %}
+  <option value={{s}}>{{s}}</option>
+  {% endfor %}
+</select>
+<br>
+
+<br>
+
+
+
+
+  <input type="submit" value="Submit">
+
+
+</form>
+
+{% if not buy_list %}
+ <p> No Stocks recommended to be bought for now </p>
+
+{% else %}
+
+<h1>Recommended Stocks to buy</h1>
+
+<table>
+    <tr>
+        <th>Symbol</th>
+        <th>Quantity</th>
+        <th>Current Price</th>
+        <th>Expected Annual Return</th>
+    </tr>
+
+{% for x in buy_list %}
+
+    <tr>
+        <td>{{x.0}}</td>
+        <td>{{x.1}}</td>
+        <td>{{x.2}}</td>
+        <td>{{x.3}} %</td>
+    </tr>
+
+{% endfor %}
+</table>
+
+{% endif %}
+
+
+{% endblock %}
