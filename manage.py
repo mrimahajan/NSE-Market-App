@@ -6,17 +6,17 @@ import pandas as pd
 from django.contrib.staticfiles.storage import staticfiles_storage
 import django
 import pickle
-from keras.models import load_model
+#from keras.models import load_model
 import numpy as np 
 import yfinance as yf
-from nsepy import get_history
-from statsmodels.tsa.seasonal import seasonal_decompose
+#from nsepy import get_history
+#from statsmodels.tsa.seasonal import seasonal_decompose
 from datetime import date
 import datetime
-import talib
-from scipy.stats import norm
-from yahoofinancials import YahooFinancials
-from nsepython import *
+#import talib
+#from scipy.stats import norm
+#from yahoofinancials import YahooFinancials
+#from nsepython import *
 
 def get_data(symbol,start,end):
     try:

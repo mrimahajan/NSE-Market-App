@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '=-py)bp(xagxj#kl)%l6y$i_va@t6p9(!he@p(5u(2xct5*dfz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
