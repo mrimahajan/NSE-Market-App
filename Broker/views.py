@@ -13,7 +13,7 @@ import yfinance as yf
 import pandas as pd
 #import seaborn as sns
 #import matplotlib.pyplot as plt
-from nsetools import Nse
+#from nsetools import Nse
 from django.templatetags.static import static
 from scipy.optimize import linprog
 from django.db.models import F
@@ -285,22 +285,22 @@ def smartinvest(request):
 def stock_detail(request,symbol):
 	today_date = datetime.date.today()
 	stock = Stock.objects.get(Symbol=symbol)
-	nse = Nse()
-	order_dict = nse.get_quote(symbol)
-	buyprice = []
-	sellprice = []
-	buyqty = []
-	sellqty = []
+	# nse = Nse()
+	# order_dict = nse.get_quote(symbol)
+	# buyprice = []
+	# sellprice = []
+	# buyqty = []
+	# sellqty = []
 
-	for i in range(1,6):
-		buyprice.append(str(order_dict[f'buyPrice{i}']))
-		buyqty.append(str(order_dict[f'buyQuantity{i}']))
-		sellprice.append(str(order_dict[f'sellPrice{i}']))
-		sellqty.append(str(order_dict[f'sellQuantity{i}']))
+	# for i in range(1,6):
+	# 	buyprice.append(str(order_dict[f'buyPrice{i}']))
+	# 	buyqty.append(str(order_dict[f'buyQuantity{i}']))
+	# 	sellprice.append(str(order_dict[f'sellPrice{i}']))
+	# 	sellqty.append(str(order_dict[f'sellQuantity{i}']))
 
-	orderbook = list(tuple(zip(buyprice,buyqty,sellqty,sellprice)))
-	high52 = str(np.round(order_dict['high52'],2))
-	low52 = str(np.round(order_dict['low52'],2))
+	# orderbook = list(tuple(zip(buyprice,buyqty,sellqty,sellprice)))
+	# high52 = str(np.round(order_dict['high52'],2))
+	# low52 = str(np.round(order_dict['low52'],2))
 
 	stock_predictions = pd.read_excel(staticfiles_storage.path('stock predictions.xlsx'),header=0)
 	last_day_close = np.round(stock_predictions.loc[stock_predictions['Symbol']==symbol,'EOD Price'].values[0],2)
@@ -407,8 +407,9 @@ def stock_detail(request,symbol):
 		'cap_cont':cap_cont,'comp_cont':comp_cont,'market_cont':market_cont,'net_impact':net_impact,'stock':stock,
 		'last_day_close':last_day_close,'accuracy':accuracy,'pred_score':pred_score,'calls':calls,'puts':puts,
 		'possible_expiries':possible_expiries,#'img_url':img_url,
-		'orderbook':orderbook,'high52':high52,'low52':low52,'projections':projections,
-		'holding_breakup':holding_breakup,'valuation':valuation,'peer_valuations':peer_valuations,'dcf_value':dcf_value
+		#'orderbook':orderbook,'high52':high52,'low52':low52,
+		'projections':projections,'holding_breakup':holding_breakup,'valuation':valuation,
+		'peer_valuations':peer_valuations,'dcf_value':dcf_value
 		})
 
 
