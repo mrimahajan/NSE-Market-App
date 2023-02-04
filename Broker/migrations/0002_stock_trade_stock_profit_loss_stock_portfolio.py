@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.AutoField(
+                    models.CharField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
