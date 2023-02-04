@@ -6,4 +6,5 @@ six==1.16.0
 yfinance==0.2.9
 Django==4.1.6
 scikit-learn==1.2.1
-livereload==6.2
+livereload==2.6.3
+psycopg2>=2.8
