@@ -43,6 +43,7 @@ def register_user(request):
 
 
 def login_user(request):
+	logout_user(request)
 	if not request.user.is_authenticated:
 		if request.method == 'POST':
 			username = request.POST['username']
