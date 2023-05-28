@@ -1,1 +1,17 @@
-
+Django==4.1
+django-crispy-forms==1.14.0
+django-livereload-server==0.4
+keras==2.6.0
+Keras-Preprocessing==1.1.2
+nsepy==0.8
+nsepython==1.4
+nsetools==1.0.11
+numpy==1.21.0
+numpydoc @ file:///tmp/build/80754af9/numpydoc_1605117425582/work
+ta==0.7.0
+TA-Lib @ file:///C:/Users/DELL/TA_Lib-0.4.21-cp38-cp38-win_amd64.whl
+tensorflow==2.6.0
+tensorflow-estimator==2.6.0
+yahoo-fin==0.8.9.1
+yahoofinancials==1.7
+yfinance==0.1.63
