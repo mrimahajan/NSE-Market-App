@@ -2,7 +2,5 @@ Django==4.1
 django-crispy-forms==1.14.0
 django-livereload-server==0.4
 numpy==1.21.0
-pandas
-pandas-datareader==0.10.0
-scikit-learn 
+pandas 
 yfinance==0.1.63
