@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, auth
 from Broker.models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.storage import staticfiles_storage
-from sklearn.metrics import r2_score,mean_squared_error,precision_score,accuracy_score,recall_score,roc_auc_score
+#from sklearn.metrics import r2_score,mean_squared_error,precision_score,accuracy_score,recall_score,roc_auc_score
 import datetime
 from datetime import date
 import numpy as np 
@@ -328,7 +328,7 @@ def stock_detail(request,symbol):
 	history = history.iloc[-period:]
 	history.set_index('Date',inplace=True)
 	accuracy = np.round(history['correct prediction'].sum()/history.shape[0]*100,0)
-	pred_score = np.round(r2_score(history['Actual Price'],history['Predicted Price'])*100,0)
+	# pred_score = np.round(r2_score(history['Actual Price'],history['Predicted Price'])*100,0)
 
 	# fig,ax = plt.subplots(1,1,figsize=(50,20))
 	# sns.set(font_scale=5)
@@ -405,7 +405,9 @@ def stock_detail(request,symbol):
 
 	return render(request,"Broker/stock_detail.html",context={'macro_cont':macro_cont,'sector_cont':sector_cont,
 		'cap_cont':cap_cont,'comp_cont':comp_cont,'market_cont':market_cont,'net_impact':net_impact,'stock':stock,
-		'last_day_close':last_day_close,'accuracy':accuracy,'pred_score':pred_score,'calls':calls,'puts':puts,
+		'last_day_close':last_day_close,
+		#'accuracy':accuracy,
+		'pred_score':pred_score,'calls':calls,'puts':puts,
 		'possible_expiries':possible_expiries,
 		#'img_url':img_url,
 		# 'orderbook':orderbook,'high52':high52,'low52':low52,
