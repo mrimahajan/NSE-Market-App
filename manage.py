@@ -5,18 +5,18 @@ import sys
 import pandas as pd
 from django.contrib.staticfiles.storage import staticfiles_storage
 import django
-import pickle
-from keras.models import load_model
+# import pickle
+# from keras.models import load_model
 import numpy as np 
 import yfinance as yf
-from nsepy import get_history
-from statsmodels.tsa.seasonal import seasonal_decompose
+# from nsepy import get_history
+# from statsmodels.tsa.seasonal import seasonal_decompose
 from datetime import date
 import datetime
-import talib
-from scipy.stats import norm
-from yahoofinancials import YahooFinancials
-from nsepython import *
+# import talib
+# from scipy.stats import norm
+# from yahoofinancials import YahooFinancials
+# from nsepython import *
 
 def get_data(symbol,start,end):
     try:
@@ -163,6 +163,7 @@ def create_dev_data(symbol):
     gs1115 = pd.read_csv(staticfiles_storage.path('Variables/NIFTY GS 11 15YR.csv'),header=0)
     gs15plus = pd.read_csv(staticfiles_storage.path('Variables/NIFTY GS 15YRPLUS.csv'),header=0)
     gscompsite = pd.read_csv(staticfiles_storage.path('Variables/NIFTY GS COMPSITE.csv'),header=0)
+    indiavix = pd.read_csv(staticfiles_storage.path('Variables/INDIA VIX.csv'),header=0)
     df1 = df.merge(sector_data,how='inner',on='Date',suffixes=('','_sector'))
     df2 = df1.merge(nifty500,how='inner',on='Date',suffixes=('','_nifty500'))
     df3 = df2.merge(gs813,how='inner',on='Date',suffixes=('','_gs813'))
@@ -173,8 +174,9 @@ def create_dev_data(symbol):
     df8 = df7.merge(gs15plus,how="inner",on="Date",suffixes=("","_gs15plus"))
     df9 = df8.merge(gscompsite,how="inner",on="Date",suffixes=("","_gscompsite"))
     df10 = df9.merge(cap_data,how='inner',on='Date',suffixes=('','_cap'))
+    df11 = df10.merge(indiavix,how='inner',on='Date',suffixes=('','_vix'))
     
-    return df10
+    return df11
 
 def create_pred_data(symbol):
     df = pd.read_csv(staticfiles_storage.path(f'Pred_Vars/{symbol}.csv'),header=0)
@@ -191,6 +193,7 @@ def create_pred_data(symbol):
     gs1115 = pd.read_csv(staticfiles_storage.path('Pred_Vars/NIFTY GS 11 15YR.csv'),header=0)
     gs15plus = pd.read_csv(staticfiles_storage.path('Pred_Vars/NIFTY GS 15YRPLUS.csv'),header=0)
     gscompsite = pd.read_csv(staticfiles_storage.path('Pred_Vars/NIFTY GS COMPSITE.csv'),header=0)
+    indiavix = pd.read_csv(staticfiles_storage.path('Pred_Vars/INDIA VIX.csv'),header=0)
     df1 = df.merge(sector_data,how='inner',on='Date',suffixes=('','_sector'))
     df2 = df1.merge(nifty500,how='inner',on='Date',suffixes=('','_nifty500'))
     df3 = df2.merge(gs813,how='inner',on='Date',suffixes=('','_gs813'))
@@ -201,8 +204,9 @@ def create_pred_data(symbol):
     df8 = df7.merge(gs15plus,how="inner",on="Date",suffixes=("","_gs15plus"))
     df9 = df8.merge(gscompsite,how="inner",on="Date",suffixes=("","_gscompsite"))
     df10 = df9.merge(cap_data,how='inner',on='Date',suffixes=('','_cap'))
-    
-    return df10
+    df11 = df10.merge(indiavix,how='inner',on='Date',suffixes=('','_vix'))
+
+    return df11
 
 
 
@@ -264,6 +268,7 @@ def main():
     #         pred_data = pd.read_csv(staticfiles_storage.path('pred_data.csv'),header=0)
     #         for col in input_cols:
     #             pred_data[col] = pred_data[col].apply(lambda x: max(-1,x) if x <0 else min(x,1))
+    #             pred_data[col] = pred_data[col].fillna(0)
             
     #         dates = sorted(list(pred_data['Date'].unique()))
     #         if dates[-1] == last_trade_date:
@@ -309,6 +314,7 @@ def main():
     #                 pred_data = pred_data.append(create_pred_data(symbol))
     #             for col in input_cols:
     #                 pred_data[col] = pred_data[col].apply(lambda x: max(-1,x) if x <0 else min(x,1))
+    #                 pred_data[col] = pred_data[col].fillna(0)
     #             pred_data['expected_return'] = return_model.predict(pca.transform(pred_data[input_cols]))
     #             pred_data['expected price'] = pred_data['Close']*np.exp(pred_data['expected_return'])
     #             pred_data.to_csv(staticfiles_storage.path('pred_data.csv'),index=False)
@@ -350,6 +356,7 @@ def main():
     #             pred_data = pred_data.append(create_pred_data(symbol))
     #         for col in input_cols:
     #             pred_data[col] = pred_data[col].apply(lambda x: max(-1,x) if x <0 else min(x,1))
+    #             pred_data[col] = pred_data[col].fillna(0)
     #         pred_data['expected_return'] = return_model.predict(pca.transform(pred_data[input_cols]))
     #         pred_data['expected price'] = pred_data['Close']*np.exp(pred_data['expected_return'])
     #         pred_data.to_csv(staticfiles_storage.path('pred_data.csv'),index=False)
@@ -406,6 +413,7 @@ def main():
     #         dev_data = dev_data.append(create_dev_data(symbol))
     #     for col in input_cols:
     #         dev_data[col] = dev_data[col].apply(lambda x: max(-1,x) if x <0 else min(x,1))
+    #         dev_data[col] = dev_data[col].fillna(0)
     #     dev_data = dev_data[dev_data['Date'].isin([str(datep) for datep in dates_pending])]
     #     dev_data.to_csv(staticfiles_storage.path('dev_data.csv'),index=False)
     #     dates = sorted(dev_data['Date'].unique())
@@ -443,9 +451,12 @@ def main():
     #         dev_data = dev_data[list(history.columns)]
     #         dev_data.sort_values(by='Date',inplace=True)
     #         for symbol in symbols:
-    #             last_price = list(dev_data.loc[dev_data['Symbol']==symbol,'Actual Price'])[-1]
-    #             dev_data = dev_data.append(pd.DataFrame([[symbol,last_trade_date,last_price,np.nan,
-    #                 np.nan,np.nan,np.nan,np.nan,np.nan]],columns=list(history.columns)))
+    #             try:
+    #                 last_price = list(dev_data.loc[dev_data['Symbol']==symbol,'Actual Price'])[-1]
+    #                 dev_data = dev_data.append(pd.DataFrame([[symbol,last_trade_date,last_price,np.nan,
+    #                     np.nan,np.nan,np.nan,np.nan,np.nan]],columns=list(history.columns)))
+    #             except:
+    #                 pass
 
     #         for symbol in list(dev_data['Symbol'].unique()):
     #             append_data = dev_data[dev_data['Symbol']==symbol]
@@ -468,6 +479,7 @@ def main():
     #         pred_data = pred_data.append(create_pred_data(symbol))
     #     for col in input_cols:
     #         pred_data[col] = pred_data[col].apply(lambda x: max(-1,x) if x <0 else min(x,1))
+    #         pred_data[col] = pred_data[col].fillna(0)
     #     if pred_data.shape[0] > 0:
     #         pred_data['expected_return'] = return_model.predict(pca.transform(pred_data[input_cols]))
     #         pred_data['expected price'] = pred_data['Close']*np.exp(pred_data['expected_return'])
@@ -506,7 +518,7 @@ def main():
     # pred_data = pd.read_csv(staticfiles_storage.path('pred_data.csv'),header=0)
     # input_cols = latest_eqn.index[:-1]
     # intercept = latest_eqn[-1]
-    # labels = ['_nifty500','_gs813','_gs10',"_gs10cln","_gs48","_gs1115","_gs15plus","_gscompsite"]
+    # labels = ['_nifty500','_gs813','_gs10',"_gs10cln","_gs48","_gs1115","_gs15plus","_gscompsite","_vix"]
     # macro_specific_cols = []
     # for label in labels:
     #     macro_specific_cols += [col for col in input_cols if label in str.lower(col)]
@@ -567,12 +579,20 @@ def main():
     #             valuation = Valuation()
     #             valuation.Stock = stock 
 
-    #         symbol = stock.Symbol 
+    #         symbol = str(stock.Symbol) 
+    #         pred_data = pd.read_csv(staticfiles_storage.path('pred_data.csv'),header=0)
+    #         stock_returns = np.array(pred_data.loc[pred_data['Symbol']==symbol,[f'log_return_{i}' for i in range(1,26)]])
+    #         expected_return = (np.exp(np.sum(stock_returns,axis=1)[0])-1)*10
+    #         valuation.Expected_YR_Returns = expected_return
+    #         valuation.save()
+    #         valuation = Valuation.objects.get(Stock=stock)
     #         ticker = yf.Ticker(f'{symbol}.NS')
     #         shareholding_breakup = ticker.major_holders[[1,0]]
     #         shareholding_breakup.columns = ['Holder','Percent']
     #         shareholding_breakup.to_excel(staticfiles_storage.path(f'Holding_Breakup/{symbol}.xlsx'),index=False)
     #         est_shares = int(portfolio_shares.loc[portfolio_shares['Symbol']==symbol,'Shares'].values[0])
+            
+    #         market_returns = np.array(pred_data.loc[pred_data['Symbol']==symbol,[f'log_return_{i}_nifty500' for i in range(1,26)]])
     #         valuation.Shares_Outstanding = est_shares
     #         income = pd.read_excel(staticfiles_storage.path(f'Income/{symbol}.xlsx'),header=0)
     #         balance_sheet = pd.read_excel(staticfiles_storage.path(f'Balance/{symbol}.xlsx'),header=0)
@@ -764,6 +784,9 @@ def main():
     #                                                                     projections.loc[('Actual',last_year),'longTermDebt'])
 
     #         tax_rate = projections.loc[('Actual',last_year),'incomeTaxExpense']/projections.loc[('Actual',last_year),'incomeBeforeTax']
+    #         if tax_rate <= 0:
+    #             tax_rate = 0.2
+
     #         for i in range(1,6):
     #             projections.loc[('Projection',last_year+i),'interestExpense'] = interest_rate*(projections.loc[('Projection',last_year+i),'shortTermBorrowings']+
     #                                                                     projections.loc[('Projection',last_year+i),'otherLiab']+
@@ -784,25 +807,22 @@ def main():
 
 
     #         for i in range(1,6):
-    #             projections.loc[('Projection',last_year+i),'incomeTaxExpense'] = projections.loc[('Projection',last_year+i),'incomeBeforeTax']*tax_rate
+    #             projections.loc[('Projection',last_year+i),'incomeTaxExpense'] = max(projections.loc[('Projection',last_year+i),'incomeBeforeTax']*tax_rate,0)
 
 
 
     #         for i in range(1,6):
-    #             projections.loc[('Projection',last_year+i),'netIncomeFromContinuingOps'] = projections.loc[('Projection',last_year+i),'incomeBeforeTax']*(1-tax_rate)
+    #             projections.loc[('Projection',last_year+i),'netIncomeFromContinuingOps'] = projections.loc[('Projection',last_year+i),'incomeBeforeTax']-projections.loc[('Projection',last_year+i),'incomeTaxExpense']
 
 
     #         projections = projections.T
     #         projections.to_excel(staticfiles_storage.path(f'Projections/{symbol}.xlsx'))
-    #         pred_data = pd.read_csv(staticfiles_storage.path('pred_data.csv'),header=0)
-    #         stock_returns = pred_data.loc[pred_data['Symbol']==symbol,[f'log_return_{i}' for i in range(1,26)]]
-    #         market_returns = pred_data.loc[pred_data['Symbol']==symbol,[f'log_return_{i}_nifty500' for i in range(1,26)]]
     #         market_voltality = pred_data.loc[pred_data['Symbol']==symbol,'Voltality25_nifty500'].values[0]
     #         beta = np.cov(stock_returns,market_returns)[0,1]/(market_voltality**2)
     #         valuation.Beta = beta
     #         cost_of_equity = (1-beta)*3.5/100+beta*11.5/100
     #         valuation.Cost_Of_Equity = cost_of_equity
-    #         cost_of_debt = interest_rate
+    #         cost_of_debt = -interest_rate
     #         valuation.Cost_Of_Debt = cost_of_debt
     #         debt_to_equity = projections.loc['totalLiab',('Actual',last_year)]/projections.loc['totalEquity',('Actual',last_year)]
     #         valuation.Debt_to_Equity = debt_to_equity
@@ -810,7 +830,7 @@ def main():
     #         valuation.Cost_Of_Capital = cost_of_capital
     #         discounting_factors = [1/(1+cost_of_capital)**i for i in range(1,6)]
     #         ebits = projections.loc['ebit',[('Projection',last_year+i) for i in range(1,6)]]
-    #         nopats = ebits*(1-tax_rate)
+    #         nopats = [x-max(0,x*tax_rate) for x in ebits]
     #         dep_and_amortize = projections.loc['Depreciation/Amortization',[('Projection',last_year+i) for i in range(1,6)]]
     #         wc_increase = [projections.loc['Net Working Capital',('Projection',last_year+1)]-projections.loc['Net Working Capital',('Actual',last_year)]]
     #         wc_increase += [projections.loc['Net Working Capital',('Projection',last_year+i)]-projections.loc['Net Working Capital',('Projection',last_year+i-1)] for i in range(2,6)]
@@ -847,9 +867,8 @@ def main():
     #             valuation.EV_Ebit = 0 
     #         valuation.PE_Ratio = np.round(est_shares*price/income,2)
     #         valuation.PB_Ratio = np.round(est_shares*price/equity_net,2)
-    #         valuation.Expected_YR_Returns = (np.exp(np.sum(stock_returns,axis=1)[0])-1)*10
     #         valuation.save()
-    #     except:
+    #     except Exception as e:
     #         pass
 
 
